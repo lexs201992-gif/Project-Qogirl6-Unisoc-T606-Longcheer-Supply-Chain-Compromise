@@ -27,7 +27,28 @@ Esta investigación es de carácter **defensivo y forense**, realizada sobre un 
 
 ## 2. Base Legal y Marco Normativo
 
-### 2.1. CISA BOD 26-04 (Prioritizing Security Updates Based on Risk)
+### 2.1. Validación Institucional y CVE Asignado
+Esta investigación ha sido validada y catalogada como **CVE-2026-40003** ("Operation Silent Rescue") con una puntuación **CVSS 3.1: 9.8 (Critical)**.
+- **Fuente de Validación:** AttackerKB Assessment [487da971-0613-4da1-b586-93cba85b0717](https://attackerkb.com/assessments/487da971-0613-4da1-b586-93cba85b0717)
+- **Estado:** Active Threat. Divulgación coordinada enviada a Rapid7, AttackerKB, CISA, Unisoc PSIRT y Motorola Security el **26 de junio de 2026**.
+- **Fecha de Divulgación Pública:** 24 de septiembre de 2026 (Este repositorio es parte de la evidencia técnica de soporte).
+
+### 2.2. CISA BOD 26-04
+El CVE-2026-40003 cumple con las 4 variables de riesgo del BOD 26-04:
+- **Asset Exposure:** SÍ (AV:N - Acceso remoto sin autenticación).
+- **KEV Status:** SÍ (CVE-2026-40003 es un Critical 9.8 con explotación activa documentada).
+- **Exploit Automation:** SÍ (Cadena de ataque automatizada vía SGPS/STK/DTI).
+- **Technical Impact:** TOTAL (Root + Vigilancia + Fraude Financiero).
+
+**Clasificación:** Tier 1 (Máxima Prioridad).
+
+### 2.3. Cronología de Notificación (Coordinated Disclosure)
+| Fecha | Acción |
+| :--- | :--- |
+| 26/06/2026 | Notificación coordinada a Rapid7, AttackerKB, CISA, Unisoc PSIRT, Motorola Security. |
+| 17/08/2026 | Publicación del repositorio técnico (Project Qogirl6) con evidencia forense (XMLs, Smali, Reglas de Detección). |
+| 24/09/2026 | Fecha límite de divulgación pública completa (según acuerdo de CVD). |   
+
 Este informe aplica el modelo de **4 variables de riesgo** del BOD 26-04 para clasificar la severidad del compromiso:
 - **Asset Exposure:** SÍ (dispositivos conectados a redes públicas)
 - **KEV Status:** SÍ (CVE-2026-5804 en KEV Catalog)
