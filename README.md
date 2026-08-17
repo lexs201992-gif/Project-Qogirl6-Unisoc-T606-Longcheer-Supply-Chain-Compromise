@@ -91,6 +91,11 @@ Los siguientes IOCs han sido extraídos forensemente de un **Motorola G04s** de 
 | **CVE-2022-38691** | Unisoc BootROM | **7.8** | **NO** | **SÍ** (Inyección de bootcode) | **TOTAL** (Persistencia en BootROM) | **Persistencia.** Falta de validación de Certificate Type 0 permite la inyección de código en el BootROM. |
 | **CVE-2023-36482** | Samsung S3NRN4V (NFC) | **7.5** | **NO** | **SÍ** (Buffer overflow) | **PARCIAL** (Control del microcontrolador NFC) | **Exfiltración NFC.** Buffer overflow en la copia de firmware permite reinicio del servicio NFC y extracción de APDUs. |
 
+> ✅ **VALIDACIÓN INSTITUCIONAL:**
+> Esta investigación forma parte de la operación **"Operation Silent Rescue"** catalogada como **CVE-2026-40003** (CVSS 9.8 Critical).
+> 📄 [Ver Assessment en AttackerKB](https://attackerkb.com/assessments/487da971-0613-4da1-b586-93cba85b0717)
+> 🛡️ **Estado:** Active Threat | **Divulgación Coordinada:** CISA, Rapid7, Unisoc, Motorola.   
+
 ---
 
 ## 📎 Apéndices
