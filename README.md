@@ -26,6 +26,21 @@ Esta investigación demuestra que los dispositivos **Motorola Moto G04s** (y mod
 
 ---
 
+## 🔍 Alcance y Limitaciones del Análisis
+
+Este repositorio documenta un **compromiso de cadena de suministro** (Supply Chain Compromise) y no una vulnerabilidad de software tradicional. Es importante aclarar el alcance de los hallazgos:
+
+1.  **Origen del Compromiso:** La evidencia apunta a una **inyección durante el proceso de fabricación** (ODM Longcheer), no a un exploit remoto de software. Los IOCs (servidor Jenkins, bootloader comprometido) confirman que el backdoor fue insertado **antes** de que el dispositivo llegara al usuario final.
+2.  **No es un Malware Tradicional:** Los componentes identificados (`com.motorola.motocit`, `sprd_sipc`, `wcn_chr`) son **servicios de sistema legítimos** que han sido **repurposed** (reutilizados) para la exfiltración. No se trata de un APK malicioso descargado, sino de la modificación de la funcionalidad de servicios existentes.
+3.  **Limitaciones del Análisis Estático:** El análisis se basa en:
+    *   Extracción forense de un dispositivo de laboratorio (Motorola Moto G04s).
+    *   Análisis estático de XMLs de configuración, Smali y binarios de firmware.
+    *   **No se ha realizado un análisis dinámico completo** de la comunicación SIPC en tiempo real (por razones de seguridad y legalidad).
+4.  **Impacto Potencial vs. Confirmado:**
+    *   **Confirmado:** Presencia de IOCs, configuración no estándar, y vulnerabilidades conocidas (CVE-2026-5804).
+    *   **Potencial (Hipotético):** La exfiltración activa de datos (huellas, GPS, SIM) es **hipotética** basándose en la capacidad técnica de los componentes, pero **no se ha capturado tráfico de exfiltración en vivo** en este análisis.
+5.  **Recomendación para el Usuario:** Si tu dispositivo presenta los IOCs documentados, **asume que está comprometido**. La única mitigación segura es el reemplazo del hardware.   
+
 ## 🎯 Evaluación según CISA BOD 26-04
 
 ### Las 4 Variables de Riesgo
