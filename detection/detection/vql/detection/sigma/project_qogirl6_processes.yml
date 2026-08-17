@@ -1,0 +1,40 @@
+title: Project Qogirl6 - Suspicious Unisoc/Longcheer Processes
+id: qogirl6-001
+status: experimental
+description: Detecta procesos asociados al compromiso de cadena de suministro Unisoc T606 / Longcheer
+author: Alexis Michel De La Cruz Correa
+date: 2026-08-17
+references:
+    - https://github.com/lexs201992-gif/Project-Qogirl6
+tags:
+    - attack.persistence
+    - attack.command_and_control
+    - attack.exfiltration
+logsource:
+    category: process_creation
+    product: android
+detection:
+    selection_wcn_chr:
+        Image|endswith:
+            - '/wcn_chr'
+            - 'wcn_chr'
+    selection_linkturbo:
+        Image|endswith:
+            - '/linkturbonative'
+            - 'linkturbonative'
+    selection_sprd_net:
+        Image|endswith:
+            - '/sprd_networkcontrol'
+            - 'sprd_networkcontrol'
+    selection_srmi:
+        Image|endswith:
+            - '/com.sprd.srmi.Srmiapp'
+            - 'com.sprd.srmi.Srmiapp'
+    selection_ims_ghost:
+        Image|endswith:
+            - '/spreadtrum.ims.app'
+            - 'spreadtrum.ims.app'
+    condition: any of selection_*
+falsepositives:
+    - Legitimate Unisoc modem processes (false positive rate: low)
+level: high   
