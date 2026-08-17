@@ -1,1 +1,151 @@
+detection/sigma/project_qogirl6_processes.yml
+title: Project Qogirl6 - Suspicious Unisoc/Longcheer Processes
+id: qogirl6-001
+status: experimental
+description: Detecta procesos asociados al compromiso de cadena de suministro Unisoc T606 / Longcheer
+author: Alexis Michel De La Cruz Correa
+date: 2026-08-17
+references:
+    - https://github.com/lexs201992-gif/Project-Qogirl6
+tags:
+    - attack.persistence
+    - attack.command_and_control
+    - attack.exfiltration
+logsource:
+    category: process_creation
+    product: android
+detection:
+    selection_wcn_chr:
+        Image|endswith:
+            - '/wcn_chr'
+            - 'wcn_chr'
+    selection_linkturbo:
+        Image|endswith:
+            - '/linkturbonative'
+            - 'linkturbonative'
+    selection_sprd_net:
+        Image|endswith:
+            - '/sprd_networkcontrol'
+            - 'sprd_networkcontrol'
+    selection_srmi:
+        Image|endswith:
+            - '/com.sprd.srmi.Srmiapp'
+            - 'com.sprd.srmi.Srmiapp'
+    selection_ims_ghost:
+        Image|endswith:
+            - '/spreadtrum.ims.app'
+            - 'spreadtrum.ims.app'
+    condition: any of selection_*
+falsepositives:
+    - Legitimate Unisoc modem processes (false positive rate: low)
+level: high   
+
+detection/sigma/project_qogirl6_network.yml
+title: Project Qogirl6 - Suspicious Network Tunnel Activity
+id: qogirl6-002
+status: experimental
+description: Detecta actividad de túneles WireGuard/IPv6 asociados al backdoor SIPC
+author: Alexis Michel De La Cruz Correa
+date: 2026-08-17
+references:
+    - https://github.com/lexs201992-gif/Project-Qogirl6
+tags:
+    - attack.exfiltration
+    - attack.command_and_control
+logsource:
+    category: network_connection
+    product: android
+detection:
+    selection_tun0:
+        InitiatedBy:
+            - 'wcn_chr'
+            - 'linkturbonative'
+        DestinationIp:
+            - 'fd00:2:*'
+            - '10.215.173.2'
+    selection_dns_private:
+        DestinationIp: '10.215.173.2'
+        DestinationPort: 53
+    condition: any of selection_*
+falsepositives:
+    - Legitimate VPN connections (false positive rate: medium)
+level: high   
+
+detection/sigma/project_qogirl6_file_access.yml
+title: Project Qogirl6 - Suspicious File Access to Firmware Components
+id: qogirl6-003
+status: experimental
+description: Detecta acceso a archivos de firmware comprometidos (NFC, TEE, CQA, módem)
+author: Alexis Michel De La Cruz Correa
+date: 2026-08-17
+references:
+    - https://github.com/lexs201992-gif/Project-Qogirl6
+tags:
+    - attack.discovery
+    - attack.collection
+logsource:
+    category: file_access
+    product: android
+detection:
+    selection_nfc:
+        TargetFilename:
+            - '/vendor/etc/libnfc-nci.conf'
+            - '/vendor/etc/libnfc-rn4v.conf'
+            - '/vendor/firmware/sec_s3nrn4v_firmware.bin'
+    selection_tee:
+        TargetFilename:
+            - '/vendor/etc/sunwave_config.xml'
+    selection_cqa:
+        TargetFilename:
+            - '/vendor/etc/motorola/12m/cqatest_cfg'
+    selection_modem:
+        TargetFilename:
+            - '/dev/block/by-name/modem'
+            - '/dev/block/by-name/l_deltanv'
+            - '/dev/block/by-name/pmsys'
+    condition: any of selection_*
+falsepositives:
+    - Legitimate system maintenance (false positive rate: low)
+level: medium   
+
+detection/sigma/project_qogirl6_cve_2026_5804.yml
+title: Project Qogirl6 - CVE-2026-5804 MOTOCIT Auth Bypass
+id: qogirl6-004
+status: experimental
+description: Detecta explotación de CVE-2026-5804 (bypass de autenticación en com.motorola.motocit)
+author: Alexis Michel De La Cruz Correa
+date: 2026-08-17
+references:
+    - https://github.com/lexs201992-gif/Project-Qogirl6
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-5804
+tags:
+    - attack.privilege_escalation
+    - attack.persistence
+    - cve:2026-5804
+logsource:
+    category: process_creation
+    product: android
+detection:
+    selection_motocit:
+        Image|endswith:
+            - '/com.motorola.motocit'
+            - 'com.motorola.motocit'
+        CommandLine|contains:
+            - 'SEQUENCE'
+            - 'NFCTest'
+            - 'FingerPrintTestR'
+            - 'SIMCard'
+    selection_tcp_server:
+        Image|endswith:
+            - '/com.motorola.motocit'
+        CommandLine|contains:
+            - 'tcp'
+            - 'server'
+            - 'listen'
+    condition: any of selection_*
+falsepositives:
+    - Legitimate factory testing (false positive rate: very low)
+level: critical   
+
+
 
