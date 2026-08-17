@@ -1,1 +1,172 @@
+detection/vql/project_qogirl6_triage.vql
+/*
+ * Project Qogirl6 - Triaje Forense con Velociraptor
+ * Autor: Alexis Michel De La Cruz Correa
+ * Licencia: MIT
+ * Fecha: 2026-08-17
+ *
+ * Uso: Ejecutar en flotas Rapid7 con Velociraptor para detectar
+ *      compromiso de cadena de suministro Unisoc T606 / Longcheer.
+ */
 
+// ============================================================
+// 1. Verificar Host de Compilación (IOC-001)
+// ============================================================
+SELECT
+    ClientID,
+    OS.Info.Hostname,
+    OS.Info.BuildHost AS BuildHost,
+    CASE
+        WHEN OS.Info.BuildHost CONTAINS "longcheer.net"
+        THEN "⚠️ ALERTA CRÍTICA: Firmware Longcheer sospechoso"
+        ELSE "✅ Host legítimo"
+    END AS Status
+FROM
+    OS.Info
+WHERE
+    OS.Info.BuildHost CONTAINS "longcheer.net"
+
+// ============================================================
+// 2. Verificar Interfaz de Red Fantasma (IOC-015)
+// ============================================================
+SELECT
+    ClientID,
+    OS.Net.Interfaces.InterfaceName,
+    OS.Net.Interfaces.Addresses,
+    OS.Net.Interfaces.State,
+    "⚠️ ALERTA CRÍTICA: Túnel WireGuard/IPv6 sospechoso" AS Status
+FROM
+    OS.Net.Interfaces
+WHERE
+    OS.Net.Interfaces.InterfaceName = "tun0"
+    AND OS.Net.Interfaces.Addresses CONTAINS "fd00:2"
+
+// ============================================================
+// 3. Verificar Procesos Maliciosos (IOC-025 a IOC-029)
+// ============================================================
+SELECT
+    ClientID,
+    OS.Ps.ProcessName,
+    OS.Ps.PID,
+    OS.Ps.UID,
+    OS.Ps.CommandLine,
+    CASE
+        WHEN OS.Ps.ProcessName = "wcn_chr"
+        THEN "⚠️ ALERTA: Proceso wcn_chr (túnel tun0)"
+        WHEN OS.Ps.ProcessName = "linkturbonative"
+        THEN "⚠️ ALERTA: Proceso linkturbonative (bypass DNS)"
+        WHEN OS.Ps.ProcessName = "sprd_networkcontrol"
+        THEN "⚠️ ALERTA: Proceso sprd_networkcontrol (SIPC)"
+        ELSE "⚠️ ALERTA: Proceso sospechoso"
+    END AS Status
+FROM
+    OS.Ps
+WHERE
+    OS.Ps.ProcessName IN ("wcn_chr", "linkturbonative", "sprd_networkcontrol")
+
+// ============================================================
+// 4. Verificar APKs Inyectados (IOC-009)
+// ============================================================
+SELECT
+    ClientID,
+    Glob.Path,
+    Glob.Size,
+    Glob.Mtime,
+    "⚠️ ALERTA: APK malicioso encontrado" AS Status
+FROM
+    Glob
+WHERE
+    Glob.Path = "/vendor/overlay/unisoc_overlay_power_qogirl6.apk"
+
+// ============================================================
+// 5. Verificar Paquetes con Fechas Falsas (IOC-010)
+// ============================================================
+SELECT
+    ClientID,
+    OS.Packages.PackageName,
+    OS.Packages.FirstInstallTime,
+    OS.Packages.LastUpdateTime,
+    "⚠️ ALERTA: Timestamp manipulado (2008)" AS Status
+FROM
+    OS.Packages
+WHERE
+    OS.Packages.FirstInstallTime < "2010-01-01"
+
+// ============================================================
+// 6. Verificar Configuración NFC (SCREEN_OFF_POWER_STATE)
+// ============================================================
+SELECT
+    ClientID,
+    ReadFile.Path,
+    ReadFile.Content,
+    "⚠️ ALERTA: NFC activo con pantalla apagada" AS Status
+FROM
+    ReadFile
+WHERE
+    ReadFile.Path = "/vendor/etc/libnfc-nci.conf"
+    AND ReadFile.Content CONTAINS "SCREEN_OFF_POWER_STATE=1"
+
+// ============================================================
+// 7. Verificar Configuración TEE (Sunwave)
+// ============================================================
+SELECT
+    ClientID,
+    ReadFile.Path,
+    ReadFile.Content,
+    "⚠️ ALERTA: TEE con key_emulation/data_dumping" AS Status
+FROM
+    ReadFile
+WHERE
+    ReadFile.Path = "/vendor/etc/sunwave_config.xml"
+    AND (ReadFile.Content CONTAINS "key_emulation"
+         OR ReadFile.Content CONTAINS "data_dumping")
+
+// ============================================================
+// 8. Verificar Secuencia MOTOCIT (CVE-2026-5804)
+// ============================================================
+SELECT
+    ClientID,
+    ReadFile.Path,
+    ReadFile.Content,
+    "⚠️ ALERTA CRÍTICA: Secuencia de extracción MOTOCIT activa" AS Status
+FROM
+    ReadFile
+WHERE
+    ReadFile.Path = "/vendor/etc/motorola/12m/cqatest_cfg"
+    AND ReadFile.Content CONTAINS "<SEQUENCE>"
+    AND ReadFile.Content CONTAINS "NFCTest"
+    AND ReadFile.Content CONTAINS "FingerPrintTestR"
+
+// ============================================================
+// 9. Verificar Nivel de Parche de Seguridad (Fscrypt Bypass)
+// ============================================================
+SELECT
+    ClientID,
+    OS.Info.SecurityPatchLevel,
+    OS.Info.BuildFingerprint,
+    CASE
+        WHEN OS.Info.SecurityPatchLevel < "2026-04-05"
+        THEN "⚠️ ALERTA CRÍTICA: Vulnerable a CVE-2026-5804"
+        ELSE "✅ Parcheado"
+    END AS Status
+FROM
+    OS.Info
+WHERE
+    OS.Info.SecurityPatchLevel < "2026-04-05"
+
+// ============================================================
+// 10. Verificar Particiones de Módem Comprometidas
+// ============================================================
+SELECT
+    ClientID,
+    Glob.Path,
+    Glob.Size,
+    "⚠️ ALERTA: Partición de módem detectada" AS Status
+FROM
+    Glob
+WHERE
+    Glob.Path IN (
+        "/dev/block/by-name/modem",
+        "/dev/block/by-name/l_deltanv",
+        "/dev/block/by-name/pmsys"
+    )   
