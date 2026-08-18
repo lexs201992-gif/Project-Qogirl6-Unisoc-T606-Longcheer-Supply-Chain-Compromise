@@ -34,7 +34,21 @@ La evidencia de la lista de correo del kernel Linux (LKML) confirma que **Longch
 
 **Implicación Crítica:** El compromiso de cadena de suministro documentado en este repositorio **no es un bug de un ODM de baja calidad**, sino una **violación de la confianza en un socio estratégico de la industria móvil global**. Si Longcheer puede comprometer la cadena de suministro de dispositivos Android One (Google), puede comprometer cualquier dispositivo que fabrique, incluyendo los Motorola Moto G04s con Unisoc T606.
 
-**Referencia:** [LKML Patch 09/13: arm64: dts: qcom: msm8916-longcheer-l8150](https://lkml.iu.edu/2309.3/07772.html)   
+**Referencia:** [LKML Patch 09/13: arm64: dts: qcom: msm8916-longcheer-l8150](https://lkml.iu.edu/2309.3/07772.html)  
+
+## 📄 White Paper: Legal and Economic Investigation
+
+> **Note:** This document is written in **English** to align with FCC regulatory standards and the House Select Committee on China's "Stranger Pings" report (August 2026). It provides the geopolitical and economic context for the technical findings in this repository.
+
+The technical evidence in this repository demonstrates *how* the compromise works. The accompanying white paper explains *why* it exists and *who* is responsible, documenting the state ownership trail from Tsinghua Unigroup (Unisoc) to Longcheer (ODM) via the China Internet Investment Fund (CIIF).
+
+📄 **Read the White Paper:** [`/whitepaper/legal_economic_investigation.md`](./whitepaper/legal_economic_investigation.md)
+
+**Key Findings in the White Paper:**
+*   **State Ownership:** Tsinghua Unigroup (100% state-owned) acquired Spreadtrum in 2013, making chip design a national security asset.
+*   **CAC Control:** The China Internet Investment Fund (CIIF), directed by the Cyberspace Administration of China (CAC), holds strategic control over Longcheer.
+*   **Legal Mandate:** China's National Intelligence Law (2017) legally mandates corporate cooperation with state intelligence.
+*   **FCC Relevance:** Extends the "Stranger Pings" findings to the consumer hardware supply chain, recommending Unisoc/Longcheer be treated as national security risk entities.   
 
 ---
 
