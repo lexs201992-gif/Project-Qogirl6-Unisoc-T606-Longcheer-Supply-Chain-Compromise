@@ -21,6 +21,19 @@ Esta carpeta contiene los XMLs y configuraciones de firmware extraídos del disp
 | `build.prop` | Propiedades del sistema (product) | `oem_trusted_certificate`, `ro.base_build=noah` |
 | `build.prop_system_ext` | Propiedades del sistema (system_ext) | `SYSTEM-Android14--U1.0-W26.11.3`, `no_require_sim=true` |
 
+### Nota de Ofuscación: `sw_config.xml`
+- **Nombre real:** `sw_config.xml`
+- **Path original:** `/vendor/odm/etc/sw_config.xml`
+- **Nombre esperado:** `sunwave_config.xml` en `/vendor/etc/`
+- **Hallazgo:** El ODM (Longcheer/Unisoc) renombra y mueve la configuración del TEE (Sunwave) a la partición `odm` para evadir auditorías estándar. Esto confirma la intención de ocultar las capacidades de emulación y dump del sensor biométrico.
+
+### Nota sobre Sunwave (`sw_config.xml`)
+- **Proveedor:** Sunwave Corporation (Shenzhen) — fabricante independiente de sensores de huella
+- **No es propiedad de Unisoc/Longcheer:** Es un proveedor de hardware que licencia su firmware a Unisoc
+- **Path original:** `/vendor/odm/etc/sw_config.xml` (ofuscado, no en `/vendor/etc/`)
+- **Hallazgo:** La configuración TEE del sensor Sunwave contiene flags de emulación (`key_emulation`), exportación de huellas (`img_invciper_data`), y dump de datos (`data_dumping`) que **violan el principio de aislamiento del TEE**
+- **Implicación:** El backdoor no está en el chip Sunwave, sino en la **configuración inyectada por Longcheer** en el TEE de Unisoc   
+
 ## Notas de Seguridad
 - **No contener datos personales** (IMEI, serial, MAC) han sido anonimizados.
 - Los archivos son **evidencia primaria** del compromiso de cadena de suministro.
