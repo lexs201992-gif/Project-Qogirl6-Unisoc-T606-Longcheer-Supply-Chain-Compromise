@@ -1,0 +1,29 @@
+title: Project Qogirl6 - Suspicious Unisoc/Spreadtrum Kernel Modules
+id: qogirl6-006
+status: experimental
+description: Detecta carga de módulos kernel Unisoc/Spreadtrum comprometidos (SIPC, IOMMU, PDGB)
+author: Alexis Michel De La Cruz Correa
+date: 2026-08-18
+references:
+    - https://github.com/lexs201992-gif/Project-Qogirl6
+tags:
+    - attack.persistence
+    - attack.privilege_escalation
+logsource:
+    category: driver_load
+    product: android
+detection:
+    selection_sipc:
+        Image|contains:
+            - 'unisoc-mailbox'
+            - 'sprd_sipc'
+    selection_iommu:
+        Image|contains:
+            - 'sprd_iommu'
+    selection_pdgb:
+        Image|contains:
+            - 'sprd_pdgb'
+    condition: any of selection_*
+falsepositives:
+    - Legitimate Unisoc modem drivers (false positive rate: low)
+level: high   
