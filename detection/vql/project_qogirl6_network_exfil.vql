@@ -1,0 +1,67 @@
+/*
+ * Project Qogirl6 - Detección de Exfiltración de Red
+ * Autor: Alexis Michel De La Cruz Correa
+ * Licencia: MIT
+ * Fecha: 2026-08-18
+ * Punto de Análisis: Interfaces de red, conexiones activas, DNS
+ * Implementación: Monitoreo en vivo de túneles WireGuard,
+ *                 conexiones a C2, y DNS privados.
+ */
+
+// ============================================================
+// 21. Verificar túneles WireGuard/IPv6 (tun0 fd00:2)
+// ============================================================
+SELECT
+    ClientID,
+    OS.Net.Interfaces.InterfaceName,
+    OS.Net.Interfaces.Addresses,
+    OS.Net.Interfaces.State,
+    "⚠️ CRÍTICO: Túnel WireGuard/IPv6 persistente (IOC-015)" AS Status
+FROM
+    OS.Net.Interfaces
+WHERE
+    OS.Net.Interfaces.InterfaceName IN ("tun0", "wg0")
+    AND OS.Net.Interfaces.Addresses CONTAINS "fd00:2"
+
+// ============================================================
+// 22. Verificar conexiones a DNS privado (10.215.173.2)
+// ============================================================
+SELECT
+    ClientID,
+    OS.Net.Connections.LocalAddress,
+    OS.Net.Connections.RemoteAddress,
+    OS.Net.Connections.State,
+    "⚠️ CRÍTICO: Conexión a DNS privado (C2)" AS Status
+FROM
+    OS.Net.Connections
+WHERE
+    OS.Net.Connections.RemoteAddress CONTAINS "10.215.173.2"
+
+// ============================================================
+// 23. Verificar procesos con acceso a interfaces de red comprometidas
+// ============================================================
+SELECT
+    ClientID,
+    OS.Ps.ProcessName,
+    OS.Ps.PID,
+    OS.Ps.UID,
+    "⚠️ Proceso con acceso a red comprometida" AS Status
+FROM
+    OS.Ps
+WHERE
+    OS.Ps.ProcessName IN ("wcn_chr", "linkturbonative", "sprd_networkcontrol")
+    AND OS.Ps.UID IN ("root", "system", "u0_a2345")
+
+// ============================================================
+// 24. Verificar OSU/Hotspot 2.0 (captura de credenciales WiFi)
+// ============================================================
+SELECT
+    ClientID,
+    OS.Ps.ProcessName,
+    OS.Ps.PID,
+    "⚠️ ALTO: OsuLoginActivity activo (posible captura de credenciales WiFi)" AS Status
+FROM
+    OS.Ps
+WHERE
+    OS.Ps.ProcessName CONTAINS "hotspot2"
+    OR OS.Ps.ProcessName CONTAINS "osulogin"   
