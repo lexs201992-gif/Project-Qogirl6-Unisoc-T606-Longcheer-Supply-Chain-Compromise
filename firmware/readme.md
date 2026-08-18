@@ -12,7 +12,7 @@ Esta carpeta contiene los XMLs y configuraciones de firmware extraídos del disp
 | `slog_modem.conf` | Logging de producción del módem | `minidump enable`, `overwrite on` (anti-forense) |
 | `slog_modem_factory.conf` | Logging de fábrica del módem | `cp_wcn on` (captura de tráfico baseband) |
 | `sunwave_config.xml` | Configuración TEE (Sunwave/Trusty) | `key_emulation`, `data_dumping`, `img_invciper_data` |
-| `libnfc-rn4v.conf` | Controlador NFC Samsung S3NRN4V | `CP_COLDRESET_ENABLE=1`, `OFFHOST_ROUTE_UICC=0x83` |
+| `libnfc-sec-vendor.conf` | Controlador NFC Samsung S3NRN4V | `CP_COLDRESET_ENABLE=1`, `OFFHOST_ROUTE_UICC=0x83` |
 | `libnfc-nci.conf` | Stack NFC NCI (Enrutamiento APDUs) | `SCREEN_OFF_POWER_STATE=1`, `NFA_AID_BLOCK_ROUTE=1` |
 | `android.hardware.drm.xml` | HAL de DRM (Widevine) | AIDL v1 (vulnerable a interceptación binder) |
 | `cqatest_cfg` | Configuración MOTOCIT (Pruebas de Fábrica) | `SEQUENCE` 42 pasos, `MMI`, `PAT`, `LDA1-5` |
@@ -32,7 +32,13 @@ Esta carpeta contiene los XMLs y configuraciones de firmware extraídos del disp
 - **No es propiedad de Unisoc/Longcheer:** Es un proveedor de hardware que licencia su firmware a Unisoc
 - **Path original:** `/vendor/odm/etc/sw_config.xml` (ofuscado, no en `/vendor/etc/`)
 - **Hallazgo:** La configuración TEE del sensor Sunwave contiene flags de emulación (`key_emulation`), exportación de huellas (`img_invciper_data`), y dump de datos (`data_dumping`) que **violan el principio de aislamiento del TEE**
-- **Implicación:** El backdoor no está en el chip Sunwave, sino en la **configuración inyectada por Longcheer** en el TEE de Unisoc   
+- **Implicación:** El backdoor no está en el chip Sunwave, sino en la **configuración inyectada por Longcheer** en el TEE de Unisoc
+
+### Nota de Ofuscación: `libnfc-sec-vendor.conf`
+- **Nombre real:** `libnfc-sec-vendor.conf`
+- **Path original:** `/vendor/etc/libnfc-sec-vendor.conf`
+- **Nombre esperado:** `libnfc-rn4v.conf` o `libnfc-samsung.conf`
+- **Hallazgo:** El ODM usa el prefijo `sec-` (Samsung) y el sufijo `-vendor` para ocultar que el controlador NFC es un **S3NRN4V**. El "RN4V" solo es visible en el comentario `#Target: RN4V` y en los nombres de los binarios de firmware (`sec_s3nrn4v_*.bin`). Esto dificulta la identificación rápida del hardware NFC comprometido.   
 
 ## Notas de Seguridad
 - **No contener datos personales** (IMEI, serial, MAC) han sido anonimizados.
