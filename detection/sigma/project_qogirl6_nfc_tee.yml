@@ -1,0 +1,31 @@
+title: Project Qogirl6 - Suspicious NFC/TEE/DRM Configuration Access
+id: qogirl6-007
+status: experimental
+description: Detecta acceso a configuraciones NFC, TEE y DRM comprometidas
+author: Alexis Michel De La Cruz Correa
+date: 2026-08-18
+references:
+    - https://github.com/lexs201992-gif/Project-Qogirl6
+tags:
+    - attack.collection
+    - attack.exfiltration
+logsource:
+    category: file_access
+    product: android
+detection:
+    selection_nfc_firmware:
+        TargetFilename:
+            - '/vendor/firmware/sec_s3nrn4v_firmware.bin'
+    selection_tee_sunwave:
+        TargetFilename:
+            - '/vendor/etc/sunwave_config.xml'
+    selection_drm_widevine:
+        TargetFilename:
+            - '/vendor/etc/vintf/manifest/android.hardware.drm.xml'
+    selection_cqa:
+        TargetFilename:
+            - '/vendor/etc/motorola/12m/cqatest_cfg'
+    condition: any of selection_*
+falsepositives:
+    - Legitimate system maintenance (false positive rate: low)
+level: medium   
