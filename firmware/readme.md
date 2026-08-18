@@ -29,6 +29,26 @@ Esta carpeta contiene los XMLs y configuraciones de firmware extraídos del disp
 - **Proveedor:** Sunwave Corporation (Shenzhen) — fabricante independiente de sensores de huella. No es propiedad de Unisoc/Longcheer.
 - **Implicación:** El backdoor no está en el chip Sunwave, sino en la **configuración inyectada por Longcheer** en el TEE de Unisoc.
 
+### Nota sobre `FD_tunning_param.xml` (Reconocimiento Facial)
+- **Path original:** `/system/vendor/etc/FD_tunning_param.xml`
+- **Hallazgo:** Configuración de tuning para el motor de reconocimiento facial de Unisoc.
+- **Riesgo:** El modo preview tiene `doubleCheck=1` y `checkFaceNum=3`, lo que permite **capturar datos faciales de múltiples personas** en tiempo real. Un atacante puede **forzar el modo preview** para **exfiltrar perfiles faciales** sin activar el FaceID oficial.
+- **Implicación:** El dispositivo no solo captura una imagen, sino que **procesa y optimiza** el reconocimiento facial, construyendo un **perfil facial** a partir de múltiples frames.
+
+### Nota sobre `FaceID.xml` (Sistema de Reconocimiento Facial)
+- **Path original:** `/system/vendor/etc/FaceID.xml`
+- **Hallazgo:** Configuración completa del sistema FaceID de Unisoc con liveness detection, análisis ocular y verificación facial activos.
+- **Riesgo:** Los parámetros `fliveEnable=1`, `eyeAnalyzeEnable=1`, y `fvEnable=1` permiten **capturar datos faciales, estado de ojos, y liveness** en tiempo real. Un atacante puede **forzar una verificación facial** para **exfiltrar perfiles faciales** y **crear deepfakes**.
+- **Implicación:** El dispositivo no solo desbloquea con la cara, sino que **procesa y almacena** datos faciales detallados (ángulos, calidad, liveness) que pueden ser **exfiltrados** a través del canal SIPC.   
+### Nota sobre `FaceID.xml` (Parte 2: Liveness, FV y EyeAnalyze)
+- **Path original:** `/system/vendor/etc/FaceID.xml`
+- **Hallazgo:** Parámetros de liveness detection, Face Verification, y análisis ocular.
+- **Riesgo:** 
+  - `authLittleThr=0.50` permite **capturar perfiles faciales en contraluz/oscuridad**.
+  - `authAnaEyeOpenBackThr=-20` permite **capturar datos faciales con contraluz**.
+  - Los umbrales escalonados de ojos abiertos/cerrados permiten **capturar datos con parpadeo parcial**.
+- **Implicación:** El sistema está diseñado para **capturar datos faciales en las peores condiciones de luz**, lo que facilita la **exfiltración encubierta** de perfiles faciales a través del canal SIPC.   
+
 ### Nota de Ofuscación: `libnfc-sec-vendor.conf` (NFC S3NRN4V)
 - **Nombre real:** `libnfc-sec-vendor.conf`
 - **Path original:** `/vendor/etc/libnfc-sec-vendor.conf`
