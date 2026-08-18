@@ -1,0 +1,80 @@
+/*
+ * Project Qogirl6 - Detección de Configuraciones NFC/TEE/DRM Anómalas
+ * Autor: Alexis Michel De La Cruz Correa
+ * Licencia: MIT
+ * Fecha: 2026-08-18
+ * Punto de Análisis: /vendor/etc/, /vendor/firmware/
+ * Implementación: Triaje forense de configuraciones de hardware
+ *                 que permiten exfiltración multi-canal.
+ */
+
+// ============================================================
+// 17. Verificar firmware NFC S3NRN4V (CVE-2023-36482)
+// ============================================================
+SELECT
+    ClientID,
+    Glob.Path,
+    Glob.Size,
+    "⚠️ CRÍTICO: Firmware NFC S3NRN4V (verificar CVE-2023-36482)" AS Status
+FROM
+    Glob
+WHERE
+    Glob.Path = "/vendor/firmware/sec_s3nrn4v_firmware.bin"
+
+// ============================================================
+// 18. Verificar configuración TEE Sunwave (key_emulation/data_dumping)
+// ============================================================
+SELECT
+    ClientID,
+    ReadFile.Path,
+    CASE
+        WHEN ReadFile.Content CONTAINS "key_emulation"
+         AND ReadFile.Content CONTAINS "data_dumping"
+         AND ReadFile.Content CONTAINS "img_invciper_data"
+        THEN "⚠️ CRÍTICO: TEE con emulación + dump + exportación de huellas"
+        WHEN ReadFile.Content CONTAINS "navigation"
+         AND ReadFile.Content CONTAINS "RLUD"
+        THEN "⚠️ ALTO: TEE con navegación invertida (RLUD)"
+        ELSE "⚠️ TEE Sunwave detectado"
+    END AS Status
+FROM
+    ReadFile
+WHERE
+    ReadFile.Path = "/vendor/etc/sunwave_config.xml"
+
+// ============================================================
+// 19. Verificar HAL DRM Widevine (AIDL v1 - vulnerable)
+// ============================================================
+SELECT
+    ClientID,
+    ReadFile.Path,
+    "⚠️ ALTO: HAL DRM Widevine AIDL v1 (vulnerable a interceptación binder)" AS Status
+FROM
+    ReadFile
+WHERE
+    ReadFile.Path = "/vendor/etc/vintf/manifest/android.hardware.drm.xml"
+    AND ReadFile.Content CONTAINS "IDrmFactory/widevine"
+    AND ReadFile.Content CONTAINS "version=\"1\""
+
+// ============================================================
+// 20. Verificar CQA Test SEQUENCE (42 pasos)
+// ============================================================
+SELECT
+    ClientID,
+    ReadFile.Path,
+    CASE
+        WHEN ReadFile.Content CONTAINS "<SEQUENCE>"
+         AND ReadFile.Content CONTAINS "NFCTest"
+         AND ReadFile.Content CONTAINS "FingerPrintTestR"
+         AND ReadFile.Content CONTAINS "SIMCard"
+         AND ReadFile.Content CONTAINS "GPS"
+        THEN "⚠️ CRÍTICO: SEQUENCE de 42 pasos activa (CVE-2026-5804)"
+        WHEN ReadFile.Content CONTAINS "<MMI>"
+         AND ReadFile.Content CONTAINS "NFCTest"
+        THEN "⚠️ ALTO: Perfil MMI con acceso a NFC"
+        ELSE "⚠️ CQA Test configurado"
+    END AS Status
+FROM
+    ReadFile
+WHERE
+    ReadFile.Path = "/vendor/etc/motorola/12m/cqatest_cfg"
