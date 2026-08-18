@@ -11,7 +11,7 @@ Esta carpeta contiene los XMLs y configuraciones de firmware extraídos del disp
 | `uniber.conf` | Balanceo de IRQs del módem | `IGNORED_IRQ_NO` comentado (sin aislamiento AP/CP) |
 | `slog_modem.conf` | Logging de producción del módem | `minidump enable`, `overwrite on` (anti-forense) |
 | `slog_modem_factory.conf` | Logging de fábrica del módem | `cp_wcn on` (captura de tráfico baseband) |
-| `sunwave_config.xml` | Configuración TEE (Sunwave/Trusty) | `key_emulation`, `data_dumping`, `img_invciper_data` |
+| `sw_config.xml` | Configuración TEE (Sunwave/Trusty) | `key_emulation`, `data_dumping`, `img_invciper_data` |
 | `libnfc-sec-vendor.conf` | Controlador NFC Samsung S3NRN4V | `CP_COLDRESET_ENABLE=1`, `OFFHOST_ROUTE_UICC=0x83` |
 | `libnfc-nci.conf` | Stack NFC NCI (Enrutamiento APDUs) | `SCREEN_OFF_POWER_STATE=1`, `NFA_AID_BLOCK_ROUTE=1` |
 | `android.hardware.drm.xml` | HAL de DRM (Widevine) | AIDL v1 (vulnerable a interceptación binder) |
@@ -21,26 +21,22 @@ Esta carpeta contiene los XMLs y configuraciones de firmware extraídos del disp
 | `build.prop` | Propiedades del sistema (product) | `oem_trusted_certificate`, `ro.base_build=noah` |
 | `build.prop_system_ext` | Propiedades del sistema (system_ext) | `SYSTEM-Android14--U1.0-W26.11.3`, `no_require_sim=true` |
 
-### Nota de Ofuscación: `sw_config.xml`
+### Nota de Ofuscación: `sw_config.xml` (Sunwave TEE)
 - **Nombre real:** `sw_config.xml`
 - **Path original:** `/vendor/odm/etc/sw_config.xml`
 - **Nombre esperado:** `sunwave_config.xml` en `/vendor/etc/`
 - **Hallazgo:** El ODM (Longcheer/Unisoc) renombra y mueve la configuración del TEE (Sunwave) a la partición `odm` para evadir auditorías estándar. Esto confirma la intención de ocultar las capacidades de emulación y dump del sensor biométrico.
+- **Proveedor:** Sunwave Corporation (Shenzhen) — fabricante independiente de sensores de huella. No es propiedad de Unisoc/Longcheer.
+- **Implicación:** El backdoor no está en el chip Sunwave, sino en la **configuración inyectada por Longcheer** en el TEE de Unisoc.
 
-### Nota sobre Sunwave (`sw_config.xml`)
-- **Proveedor:** Sunwave Corporation (Shenzhen) — fabricante independiente de sensores de huella
-- **No es propiedad de Unisoc/Longcheer:** Es un proveedor de hardware que licencia su firmware a Unisoc
-- **Path original:** `/vendor/odm/etc/sw_config.xml` (ofuscado, no en `/vendor/etc/`)
-- **Hallazgo:** La configuración TEE del sensor Sunwave contiene flags de emulación (`key_emulation`), exportación de huellas (`img_invciper_data`), y dump de datos (`data_dumping`) que **violan el principio de aislamiento del TEE**
-- **Implicación:** El backdoor no está en el chip Sunwave, sino en la **configuración inyectada por Longcheer** en el TEE de Unisoc
-
-### Nota de Ofuscación: `libnfc-sec-vendor.conf`
+### Nota de Ofuscación: `libnfc-sec-vendor.conf` (NFC S3NRN4V)
 - **Nombre real:** `libnfc-sec-vendor.conf`
 - **Path original:** `/vendor/etc/libnfc-sec-vendor.conf`
 - **Nombre esperado:** `libnfc-rn4v.conf` o `libnfc-samsung.conf`
-- **Hallazgo:** El ODM usa el prefijo `sec-` (Samsung) y el sufijo `-vendor` para ocultar que el controlador NFC es un **S3NRN4V**. El "RN4V" solo es visible en el comentario `#Target: RN4V` y en los nombres de los binarios de firmware (`sec_s3nrn4v_*.bin`). Esto dificulta la identificación rápida del hardware NFC comprometido.   
+- **Hallazgo:** El ODM usa el prefijo `sec-` (Samsung) y el sufijo `-vendor` para ocultar que el controlador NFC es un **S3NRN4V**. El "RN4V" solo es visible en el comentario `#Target: RN4V` y en los nombres de los binarios de firmware (`sec_s3nrn4v_*.bin`). Esto dificulta la identificación rápida del hardware NFC comprometido.
 
 ## Notas de Seguridad
-- **No contener datos personales** (IMEI, serial, MAC) han sido anonimizados.
+- **No contienen datos personales** (IMEI, serial, MAC) han sido anonimizados.
 - Los archivos son **evidencia primaria** del compromiso de cadena de suministro.
+- **Advertencia de Anti-Forense:** La manipulación de los Smalis relacionados con los sensores IMS y `TsGestures` puede provocar un *kernel panic* intencional como mecanismo de defensa del backdoor. Se requiere un control estricto del entorno de análisis para evitar la activación de la "Rescue Party".
 - Referencia técnica: [README Principal](../README.md)   
