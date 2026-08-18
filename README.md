@@ -24,6 +24,18 @@ Esta investigación demuestra que los dispositivos **Motorola Moto G04s** (y mod
 5. **Ofuscación de Estado:** Reporte falso de parches de seguridad (Fscrypt Bypass) y manipulación de timestamps (fechas de 2008) para evadir detección.
 6. **Exfiltración Persistente:** Túneles `wg0` (WireGuard) y tráfico QUIC que sobreviven a la desconexión de WiFi y reinicios.
 
+## 🏭 Contexto del ODM: Longcheer como Socio Estratégico Global
+
+La evidencia de la lista de correo del kernel Linux (LKML) confirma que **Longcheer** es un fabricante de hardware de primer nivel, no un ODM de baja calidad. El patch `arm64: dts: qcom: msm8916-longcheer-l8150` (Stephan Gerhold, 2023) documenta que la plataforma **Longcheer L8150** (MSM8916) fue la base para:
+
+- **Wileyfox Swift** (dispositivo de gama media europeo)
+- **Android One "google-seed"** (dispositivos oficiales de Google)
+- **Cherry Mobile One G1**, **i-mobile IQ II**, **General Mobile 4G** (mercado asiático)
+
+**Implicación Crítica:** El compromiso de cadena de suministro documentado en este repositorio **no es un bug de un ODM de baja calidad**, sino una **violación de la confianza en un socio estratégico de la industria móvil global**. Si Longcheer puede comprometer la cadena de suministro de dispositivos Android One (Google), puede comprometer cualquier dispositivo que fabrique, incluyendo los Motorola Moto G04s con Unisoc T606.
+
+**Referencia:** [LKML Patch 09/13: arm64: dts: qcom: msm8916-longcheer-l8150](https://lkml.iu.edu/2309.3/07772.html)   
+
 ---
 
 ## 🔍 Alcance y Limitaciones del Análisis
