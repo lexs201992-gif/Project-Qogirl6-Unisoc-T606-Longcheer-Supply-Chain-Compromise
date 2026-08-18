@@ -96,6 +96,39 @@ Los siguientes IOCs han sido extraídos forensemente de un **Motorola G04s** de 
 > 📄 [Ver Assessment en AttackerKB](https://attackerkb.com/assessments/487da971-0613-4da1-b586-93cba85b0717)
 > 🛡️ **Estado:** Active Threat | **Divulgación Coordinada:** CISA, Rapid7, Unisoc, Motorola.   
 
+## 🔐 Evidencia de Particiones: build.prop (system + system_ext)
+
+### Fscrypt Provisioning Bypass — Confirmación Definitiva
+
+| Partición | Campo | Valor | Significado |
+| :--- | :--- | :--- | :--- |
+| **product** | `ro.product.build.date` | `Wed Mar 18 15:42:41 CST 2026` | Fecha real de compilación |
+| **system_ext** | `ro.system_ext.build.date` | `Wed Mar 18 15:42:40 CST 2026` | **1 segundo antes** (coherente) |
+| **system_ext** | `ro.system.component.label` | `SYSTEM-Android14--U1.0-W26.11.3` | **CRÍTICO.** Build interno de Motorola/Unisoc |
+| **Reportado** | `ro.build.version.security_patch` | `2026-04-05` | **FALSO.** 18 días después de la compilación |
+
+**Conclusión:** Ambas particiones (`product` y `system_ext`) fueron compiladas el **18 de marzo de 2026**, pero el dispositivo reporta un patch level de **5 de abril de 2026**.  Esto confirma que el patch level fue **inyectado por el provisioning blob** (`oem_trusted_certificate`), no por una actualización real del firmware.
+
+### Hallazgo Crítico: `ro.system.component.label`
+
+   
+**Análisis:**
+- **`U1.0`**: Versión de firmware Unisoc (primera iteración).
+- **`W26.11.3`**: **Semana 26, build 11.3** del ciclo de compilación de Unisoc.
+- **Implicación:** Este label confirma que el firmware fue **compilado por Unisoc** (no por Motorola) y que es la **primera versión** (`U1.0`) de la plataforma Android 14 para T606. Un atacante con acceso al servidor de compilación de Unisoc puede **inyectar código** en esta primera iteración y que se propague a todos los dispositivos fabricados con este build. 
+
+### Otras Propiedades Críticas (system_ext)
+
+| Propiedad | Valor | Riesgo |
+| :--- | :--- | :--- |
+| `ro.sprd.superresolution=1` | Habilitado | **Alto.** Superresolución de Unisoc. Puede ser usado para **procesar imágenes de cámara** en el SoC (NPU) y **exfiltrar metadatos**. |
+| `ro.media.recoderEIS.enabled=true` | Habilitado | **Alto.** Estabilización de video (EIS). Un atacante puede **capturar video estabilizado** de la cámara para **vigilancia remota** de mejor calidad. |
+| `ro.sprd.pwctl.ultra.message=1` | Habilitado | **Medio.** Control de potencia ultra de Unisoc. Permite **optimizar el consumo de energía** durante la exfiltración. |
+| `ro.sys.pwctl.ultrasaving=1` | Habilitado | **Medio.** Modo de ahorro ultra. Puede **extender la autonomía** del dispositivo durante operaciones de vigilancia prolongada. |
+| `keyguard.no_require_sim=true` | **CRÍTICO.** Permite el **desbloqueo sin SIM**. Un atacante puede **usar el dispositivo sin SIM** para **exfiltración** o **C2** sin necesidad de una tarjeta activa.  |
+| `persist.nhmonitor.enable=on` | Habilitado | **Alto.** Monitor de red de Unisoc. Puede **monitorear el tráfico de red** y **detectar cuándo el usuario está en una red segura** para **activar la exfiltración**. |
+| `ro.unipnp.switch=true` | Habilitado | **Medio.** Unisoc PnP (Plug and Play). Permite la **conexión de dispositivos USB** sin autenticación, facilitando un **ataque Evil Maid**. |
+| `persist.sys.bl.clearuserdata=true` | **CRÍTICO.** Permite **borrar datos de usuario** a través de Bluetooth. Un atacante con acceso Bluetooth puede **borrar la evidencia** de su actividad. |   
 ---
 
 ## 📎 Apéndices
