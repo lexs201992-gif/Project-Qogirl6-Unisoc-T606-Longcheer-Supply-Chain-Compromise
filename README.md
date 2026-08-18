@@ -186,6 +186,18 @@ Dado que el compromiso reside en el **BootROM** y particiones de módem protegid
    ```
 4. **Reemplazo de Hardware:** La única mitigación garantizada es dejar de utilizar dispositivos con chipset **Unisoc T606/T616** fabricados por **Longcheer** hasta que se emita un parche de bootloader verificado (actualmente inexistente debido a la naturaleza del compromiso en la cadena de suministro).
 
+## Acknowledgments
+This research was conducted independently over a period of nine months (October 2025 – August 2026). The complexity of the supply chain compromise, virtualization architecture, and obfuscation techniques required a rigorous forensic methodology.
+
+- Methodological Note: Large Language Models (LLMs) were employed as analytical assistance tools to aid in pattern recognition within Smali code, structural analysis of virtualization components, and cross-referencing of CVEs and IOCs. All findings were independently validated through static analysis of firmware, kernel logs, and live device forensics. The LLMs served as certainty filters to reduce false positives and accelerate the correlation of complex technical data, in alignment with the scientific method of hypothesis testing and peer validation.
+
+## Special thanks to:
+
+- Brave Search & Brave LLM: For providing a secure, private, and unbiased research environment. The ability to investigate sensitive IOCs and analyze large volumes of technical data without tracking or surveillance was instrumental in validating these findings safely.
+- Meta AI (LLM): For assistance in pattern recognition within the Smali code and structural analysis of the virtualization components.
+- The Open-Source Security Community: For the foundational tools (Velociraptor, YARA, Sigma) that enabled the detection rule development.
+
+This disclosure is made in good faith to protect users and promote transparency in the global mobile supply chain.
 ---
 
 ## 📬 Contacto y Reportes
@@ -193,6 +205,8 @@ Dado que el compromiso reside en el **BootROM** y particiones de módem protegid
 *   **Investigador Principal:** Alexis Michel De La Cruz Correa
 *   **Repositorio:** [Project LION GitHub](https://github.com/lexs201992-gif/Project-LION-Longcheer-Integrated-Overlay-Network)
 *   **Email:** lexs201992@gmail.com
+*   **GitHub:** lexs201992-gif
+*   **AttackerKB Profile:** lexs201992-gif
 *   **Fecha de Informe:** 17 de agosto de 2026
 *   **Referencia CISA:** BOD 26-04 (Tier 1 — Máxima Prioridad)
 
