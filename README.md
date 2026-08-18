@@ -67,6 +67,14 @@ Este repositorio documenta un **compromiso de cadena de suministro** (Supply Cha
     *   **Potencial (Hipotético):** La exfiltración activa de datos (huellas, GPS, SIM) es **hipotética** basándose en la capacidad técnica de los componentes, pero **no se ha capturado tráfico de exfiltración en vivo** en este análisis.
 5.  **Recomendación para el Usuario:** Si tu dispositivo presenta los IOCs documentados, **asume que está comprometido**. La única mitigación segura es el reemplazo del hardware.   
 
+## 🗺️ Mapa de Amenazas (Threat Map)
+
+[BootROM/SP] → [Kernel/SIPC] → [SystemUI/MOTOCIT] → [Exfiltración]
+   │                  │                   │                  │
+modem_sp_info   unisoc-mailbox.ko   cqatest_config     wcn_chr (QUIC)
+modem_cp_info   sprd_sipc           SgpsUtils          tun0 (WireGuard)
+ai_engine       sw_config.xml       SidebarService     SIPC chan-5   
+
 ## 🎯 Evaluación según CISA BOD 26-04
 
 ### Las 4 Variables de Riesgo
