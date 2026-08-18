@@ -1,0 +1,60 @@
+/*
+ * Project Qogirl6 - Detección de Módulos Kernel Comprometidos
+ * Autor: Alexis Michel De La Cruz Correa
+ * Licencia: MIT
+ * Fecha: 2026-08-18
+ * Punto de Análisis: /proc/modules, /lib/modules/
+ * Implementación: Triaje forense en vivo. Detecta módulos Unisoc/Spreadtrum
+ *                 cargados en el kernel que no deberían estar presentes
+ *                 en un dispositivo legítimo.
+ */
+
+// ============================================================
+// 14. Verificar módulos kernel Unisoc/Spreadtrum comprometidos
+// ============================================================
+SELECT
+    ClientID,
+    Glob.Path AS ModulePath,
+    Glob.Size,
+    CASE
+        WHEN Glob.Path CONTAINS "unisoc-mailbox"
+        THEN "⚠️ CRÍTICO: Driver SIPC (AP↔CP) cargado"
+        WHEN Glob.Path CONTAINS "sprd_pdgb"
+        THEN "⚠️ ALTO: Power Domain Gateway (evasión de detección)"
+        WHEN Glob.Path CONTAINS "sprd_sipc"
+        THEN "⚠️ CRÍTICO: Protocolo SIPC cargado"
+        WHEN Glob.Path CONTAINS "sdhci-sprd"
+        THEN "⚠️ MEDIO: SDHCI controller Unisoc"
+        ELSE "⚠️ Módulo Unisoc/Spreadtrum detectado"
+    END AS Status
+FROM
+    Glob
+WHERE
+    Glob.Path =~ "/lib/modules/.*(unisoc|sprd|sdhci-sprd).*\.ko"
+
+// ============================================================
+// 15. Verificar módulos kernel en /proc/modules (en vivo)
+// ============================================================
+SELECT
+    ClientID,
+    ReadFile.Content AS ModuleLine,
+    "⚠️ Módulo Unisoc/Spreadtrum activo en kernel" AS Status
+FROM
+    ReadFile
+WHERE
+    ReadFile.Path = "/proc/modules"
+    AND (ReadFile.Content CONTAINS "unisoc"
+         OR ReadFile.Content CONTAINS "sprd"
+         OR ReadFile.Content CONTAINS "sdhci_sprd")
+
+// ============================================================
+// 16. Verificar IOMMU manipulation (sprd_iommu)
+// ============================================================
+SELECT
+    ClientID,
+    Glob.Path,
+    "⚠️ CRÍTICO: Driver IOMMU Unisoc (remapeo de memoria física)" AS Status
+FROM
+    Glob
+WHERE
+    Glob.Path =~ "/lib/modules/.*sprd_iommu.*\.ko"   
