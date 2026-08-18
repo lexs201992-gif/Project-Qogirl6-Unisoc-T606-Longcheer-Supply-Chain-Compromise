@@ -65,6 +65,6 @@ como mecanismo de defensa del backdoor (Rescue Party). Se requiere un control es
 - El análisis se realizó con 
 - App Manager
 A fully-featured package manager for android  io.github.muntashirakon.AppManager
-Agradecimientos espaciales y recomendación de excelente herramienta para análisis y verificación de aplicaciones 
+Agradecimientos especiales y recomendación de excelente herramienta para análisis y verificación de aplicaciones 
 - **NO recompilar** los Smalis sin un entorno aislado (riesgo de kernel panic / Rescue Party).
 - Referencia técnica: [README Principal](../README.md)   
