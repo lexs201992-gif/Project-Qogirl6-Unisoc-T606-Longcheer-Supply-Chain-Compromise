@@ -1,0 +1,34 @@
+title: Project Qogirl6 - Network Exfiltration via WireGuard/QUIC Tunnels
+id: qogirl6-008
+status: experimental
+description: Detecta exfiltración de red a través de túneles WireGuard/QUIC y DNS privados
+author: Alexis Michel De La Cruz Correa
+date: 2026-08-18
+references:
+    - https://github.com/lexs201992-gif/Project-Qogirl6
+tags:
+    - attack.exfiltration
+    - attack.command_and_control
+logsource:
+    category: network_connection
+    product: android
+detection:
+    selection_wireguard:
+        InitiatedBy:
+            - 'wcn_chr'
+            - 'linkturbonative'
+        DestinationIp:
+            - 'fd00:2:*'
+    selection_dns_private:
+        DestinationIp: '10.215.173.2'
+        DestinationPort: 53
+    selection_quic:
+        DestinationPort: 443
+        Protocol: 'udp'
+        InitiatedBy:
+            - 'wcn_chr'
+            - 'sprd_networkcontrol'
+    condition: any of selection_*
+falsepositives:
+    - Legitimate VPN connections (false positive rate: medium)
+level: high   
