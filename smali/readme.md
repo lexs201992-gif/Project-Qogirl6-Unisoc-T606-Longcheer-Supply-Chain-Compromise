@@ -21,6 +21,18 @@ como mecanismo de defensa del backdoor (Rescue Party). Se requiere un control es
 | `SIMCard.smali` | `/system/priv-app/Motocit/classes.dex` | Lee IMEI, IMSI, ICCID |
 | `FingerPrintTestR.smali` | `/system/priv-app/Motocit/classes.dex` | Extrae/verifica huella dactilar |
 | `ScanNetwork.smali` | `/system/priv-app/Motocit/classes.dex` | Escanea SSIDs/BSSIDs |
+| Archivo | Path Original | Hallazgo Crítico |
+| :--- | :--- | :--- |
+| `CmdPassException.smali` | `/system/priv-app/Motocit/classes.dex` | Canales de exfiltración de datos (`strReturnDataList`) y control de secuencia (`nSeqTag`). |
+| `CmdFailException.smali` | `/system/priv-app/Motocit/classes.dex` | Depuración remota del backdoor vía StackTrace (`getFileName`, `getLineNumber`). || Archivo | Path Original | Hallazgo Crítico |
+| :--- | :--- | :--- |
+| `CmdPassException.smali` | `/system/priv-app/Motocit/classes.dex` | 
+
+### `com.motorola.bach.modemstats/` (Cliente C2)
+| Archivo | Path Original | Hallazgo Crítico |
+| :--- | :--- | :--- |
+| `AndroidManifest.xml` | `/system/priv-app/ModemStats/AndroidManifest.xml` | `persistent=true`, `MODIFY_PHONE_STATE`, `ACTION_GEO_LOCATION_CHANGE`, `ACTION_USER_TRY_UNLOCK`. |
+| `BuildConfig.smali` | `/system/priv-app/ModemStats/classes.dex` | `FLAVOR: odm1` (personalización Longcheer), `VERSION_CODE: 0x1334fe4`. |   
 
 ### `com.longcheer.sidebar/` (SystemUI/Sidebar)
 | Archivo | Path Original | Hallazgo Crítico |
