@@ -52,6 +52,7 @@ The technical evidence in this repository demonstrates *how* the compromise work
 
 Evidence of Motorola Report with Incorrect information of the device 
 https://archive.ph/nssVI
+> Archived on 2026-08-20 01:05 UTC due to Akamai WAF blocking archive.org (see logs). Snapshot shows VTEX misconfiguration: Reference Code PB380020MX (Edge 40 Pro) served on G04s product page, with RAM listed as "199 g".
 ---
 
 ## 🔍 Alcance y Limitaciones del Análisis
