@@ -50,6 +50,8 @@ The technical evidence in this repository demonstrates *how* the compromise work
 *   **Legal Mandate:** China's National Intelligence Law (2017) legally mandates corporate cooperation with state intelligence.
 *   **FCC Relevance:** Extends the "Stranger Pings" findings to the consumer hardware supply chain, recommending Unisoc/Longcheer be treated as national security risk entities.   
 
+Evidence of Motorola Report with Incorrect information of the device 
+https://archive.ph/nssVI
 ---
 
 ## 🔍 Alcance y Limitaciones del Análisis
